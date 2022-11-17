@@ -1,0 +1,25 @@
+﻿@page "/products"
+
+@inject IViewProductsUseCase ViewProductsUseCase
+
+<h3>ProductPageComponent</h3>
+
+@if (products != null)
+{
+    @foreach (var product in products)
+            {
+                
+                    <p>@product.</p>
+                    
+            }
+}
+
+@code {
+    private List<Product> products;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        products = ViewProductsUseCase.Execute().ToList();
+    }
+}

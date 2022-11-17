@@ -1,9 +1,40 @@
 ﻿@page "/"
 
-<PageTitle>Index</PageTitle>
+@inject IViewProductsUseCase ViewProductsUseCase
 
-<h1>Hello, world!</h1>
+<h3>ProductPageComponent</h3>
 
-Welcome to your new app.
+@if (products != null)
+{
+    <div class="row">
+    @foreach (var product in products)
+    {
+        
+	<div class="col-md-3">
+                <HxCard ImageAlt="Grey area"
+		                    ImageSrc="@product.Img"
+		                    
+		                    style="width: 18rem;">
+	                    <BodyTemplate>
+		                    <HxCardTitle>@product.Title</HxCardTitle>
+		                    <HxCardText>Some quick example text to build on the card title and make up the bulk of the card's content.</HxCardText>
+		                    <HxButton Color="ThemeColor.Primary">Go somewhere</HxButton>
+	                    </BodyTemplate>
+                    </HxCard>
+                    </div>
+                    
+    }
+    </div>
+}
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+@code {
+    private List<Product> products;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        products = ViewProductsUseCase.Execute().ToList();
+    }
+}
+
+

@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace UseCases.DataStorePluginInterfaces
 {
-    public interface ICategoryRepository
+    public interface IProductRepository
     {
-        IEnumerable<Category> GetCategories();
+        IEnumerable<Product> GetProducts();
     }
 }
