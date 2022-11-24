@@ -1,39 +1,50 @@
 ﻿@page "/"
 
 @inject IViewProductsUseCase ViewProductsUseCase
-
-<h3>ProductPageComponent</h3>
+@inject NavigationManager NavigationManager
 
 @if (products != null)
 {
     <div class="row">
-    @foreach (var product in products)
-    {
-        
-	<div class="col-md-3">
-                <HxCard ImageAlt="Grey area"
-		                    ImageSrc="@product.Img"
-		                    
-		                    style="width: 18rem;">
-	                    <BodyTemplate>
-		                    <HxCardTitle>@product.Title</HxCardTitle>
-		                    <HxCardText>Some quick example text to build on the card title and make up the bulk of the card's content.</HxCardText>
-		                    <HxButton Color="ThemeColor.Primary">Go somewhere</HxButton>
-	                    </BodyTemplate>
-                    </HxCard>
-                    </div>
-                    
-    }
+        @foreach (var product in products)
+        {
+	         <div class="col-sm border-0">
+                   <HxCard ImageAlt="@product.Img"
+		                        ImageSrc="@product.Img"
+		                        style="width: 21rem;border: 0">
+                                
+	                        <BodyTemplate>
+		                        <HxCardTitle>@product.Title</HxCardTitle>
+		                        <HxCardText>Price: $@product.Price</HxCardText>
+		                        <HxButton Color="ThemeColor.Primary" @onclick="@(() => ViewSingleProduct(product))">ViewDetails</HxButton>
+                                <HxButton Color="ThemeColor.Primary" @onclick="@(() => AddToCart(product))">Add to cart</HxButton>
+	                        </BodyTemplate>
+                   </HxCard>
+             </div>     
+             <br />
+        }
     </div>
 }
 
 @code {
     private List<Product> products;
+    private List<Product> cart;
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
         products = ViewProductsUseCase.Execute().ToList();
+        cart = ViewProductsUseCase.CreateCart().ToList();
+    }
+
+    private void ViewSingleProduct(Product product)
+    {
+        NavigationManager.NavigateTo($"/product/{product.Id}");
+    }
+
+    private void AddToCart(Product product)
+    {
+        ViewProductsUseCase.AddProduct(product);
     }
 }
 

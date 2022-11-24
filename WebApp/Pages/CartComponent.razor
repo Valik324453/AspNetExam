@@ -1,0 +1,51 @@
+﻿@page "/cart"
+
+@inject IViewProductsUseCase ViewProductsUseCase
+@inject NavigationManager NavigationManager
+
+
+<h3>Cart</h3>
+
+@if (cart != null)
+{
+       <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var cartItem in cart)
+            {
+                <tr>
+                    <td>@cartItem.Id</td>
+                    <td>@cartItem.Title</td>
+                    <td>
+                       
+                        <button type="button" class="btn btn-danger" @onclick="@(() => RemoveFromCart(cartItem.Id))">Remove</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Product> cart;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        cart = ViewProductsUseCase.CreateCart().ToList();
+    }
+
+    private void RemoveFromCart(int productId)
+    {
+        DeleteProductUseCase.Execute(productId);
+        NavigationManager.NavigateTo("/products");
+    }
+
+   
+}

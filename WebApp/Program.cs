@@ -23,6 +23,8 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 // Dependency Injection for UseCases and Repositories
 //DI categories
 builder.Services.AddTransient<IViewProductsUseCase, ViewProductsUseCase>();
+builder.Services.AddTransient<IViewSingleProductUseCase, ViewSingleProductUseCase>();
+builder.Services.AddTransient<IGetProductByIdUseCase, GetProductByIdUseCase>();
 
 var app = builder.Build();
 
