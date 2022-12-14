@@ -22,18 +22,7 @@ namespace Plugins.DataStore.InMemory
                 Stock = 5,
                 Manufacturer = "Giant", //filter
                 Img = "https://www.evanscycles.com/images/products/93917718_l.jpg",
-            });
-
-            _cart.Add(new Product()
-            {
-                Id = 1,
-                Title = "Cobalt 3",
-                Description =
-        "The Pinnacle Cobalt is the bicycle equivalent of a 4x4. With its upright and comfortable riding position, versatile and grippy 40mm wide tyres, adjustable suspension forks and pannier rack mounts on all models, the Pinnacle Cobalt is a master of covering ground in comfort and control. Whether you’re riding on roads, towpaths or woodland short-cuts, the Pinnacle Cobalt handles it all with ease. If a mountain bike seems too over-built or heavy and a road bike too limiting, the do-it-all Cobalt could be what you're looking for. Due to stock availability, some components may change without notice.",
-                Price = 459, //sort
-                Stock = 5,
-                Manufacturer = "Giant", //filter
-                Img = "https://www.evanscycles.com/images/products/93917718_l.jpg",
+                Qnt = 1
             });
 
             _products.Add(new Product()
@@ -46,6 +35,7 @@ namespace Plugins.DataStore.InMemory
                 Stock = 2,
                 Manufacturer = "Redline", //filter
                 Img = "https://www.evanscycles.com/images/products/93435002_l.jpg",
+                Qnt = 1
             });
 
             _products.Add(new Product()
@@ -58,6 +48,7 @@ namespace Plugins.DataStore.InMemory
                 Stock = 7,
                 Manufacturer = "Redline", //filter
                 Img = "https://www.evanscycles.com/images/products/93435140_l.jpg",
+                Qnt = 1
             });
 
             _products.Add(new Product()
@@ -70,6 +61,7 @@ namespace Plugins.DataStore.InMemory
                 Stock = 1,
                 Manufacturer = "Bicyclette", //filter
                 Img = "https://www.evanscycles.com/images/products/93435440_l.jpg",
+                Qnt = 1
             });
 
             _products.Add(new Product()
@@ -82,6 +74,7 @@ namespace Plugins.DataStore.InMemory
                 Stock = 5,
                 Manufacturer = "Giant", //filter
                 Img = "https://www.evanscycles.com/images/products/93917103_l.jpg",
+                Qnt = 1
             });
 
             _products.Add(new Product()
@@ -94,6 +87,7 @@ namespace Plugins.DataStore.InMemory
                 Stock = 0,
                 Manufacturer = "Giant", //filter
                 Img = "https://www.evanscycles.com/images/products/91576018_l.jpg",
+                Qnt = 1
             });
 
             _products.Add(new Product()
@@ -106,6 +100,7 @@ namespace Plugins.DataStore.InMemory
                 Stock = 0,
                 Manufacturer = "Bicyclette", //filter
                 Img = "https://www.evanscycles.com/images/products/91667402_l.jpg",
+                Qnt = 1
             });
 
             _products.Add(new Product()
@@ -118,6 +113,7 @@ namespace Plugins.DataStore.InMemory
                 Stock = 1,
                 Manufacturer = "Redline", //filter
                 Img = "https://www.evanscycles.com/images/products/93435703_l.jpg",
+                Qnt = 1
             });
 
             _products.Add(new Product()
@@ -130,6 +126,7 @@ namespace Plugins.DataStore.InMemory
                 Stock = 8,
                 Manufacturer = "Giant", //filter
                 Img = "https://www.evanscycles.com/images/products/91784108_l.jpg",
+                Qnt = 1
             });
 
             _products.Add(new Product()
@@ -142,6 +139,7 @@ namespace Plugins.DataStore.InMemory
                 Stock = 2,
                 Manufacturer = "Giant", //filter
                 Img = "https://www.evanscycles.com/images/products/71162318_l.jpg",
+                Qnt = 1
             });
 
             _products.Add(new Product()
@@ -154,6 +152,7 @@ namespace Plugins.DataStore.InMemory
                 Stock = 2,
                 Manufacturer = "Giant", //filter
                 Img = "https://www.evanscycles.com/images/products/73150503_l.jpg",
+                Qnt = 1
             });
 
             _products.Add(new Product()
@@ -166,6 +165,7 @@ namespace Plugins.DataStore.InMemory
                 Stock = 12,
                 Manufacturer = "Bicyclette", //filter
                 Img = "https://www.evanscycles.com/images/products/93038915_l.jpg",
+                Qnt = 1
             });
 
             _products.Add(new Product()
@@ -178,6 +178,7 @@ namespace Plugins.DataStore.InMemory
                 Stock = 6,
                 Manufacturer = "Bicyclette", //filter
                 Img = "https://www.evanscycles.com/images/products/93312202_l.jpg",
+                Qnt = 1
             });
 
             _products.Add(new Product()
@@ -190,6 +191,7 @@ namespace Plugins.DataStore.InMemory
                 Stock = 1,
                 Manufacturer = "Bicyclette", //filter
                 Img = "https://www.evanscycles.com/images/products/93060602_l.jpg",
+                Qnt = 1
             });
 
             _products.Add(new Product()
@@ -202,6 +204,7 @@ namespace Plugins.DataStore.InMemory
                 Stock = 0,
                 Manufacturer = "Redline", //filter
                 Img = "https://www.evanscycles.com/images/products/71815108_l.jpg",
+                Qnt = 1
             });
 
 
@@ -210,6 +213,11 @@ namespace Plugins.DataStore.InMemory
         public Product GetProductById(int productId)
         {
             return _products?.FirstOrDefault(x => x.Id == productId);
+        }
+
+        public Product GetProductByIdFromCart(int productId)
+        {
+            return _cart?.FirstOrDefault(x => x.Id == productId);
         }
 
         public IEnumerable<Product> GetProducts()
@@ -232,8 +240,20 @@ namespace Plugins.DataStore.InMemory
 
         public void AddProduct(Product product)
         {
+            var productToAdd = GetProductByIdFromCart(product.Id);
+            if (productToAdd == null)
+            {
+                _cart.Add(product);
+            }
+        }
 
-            _cart.Add(product);
+        public void DeleteProductFromCart(int productId)
+        {
+            var productToDelete = GetProductByIdFromCart(productId);
+            if (productToDelete != null)
+            {
+                _cart.Remove(productToDelete);
+            }
         }
     }
 }

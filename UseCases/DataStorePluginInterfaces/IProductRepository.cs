@@ -16,5 +16,9 @@ namespace UseCases.DataStorePluginInterfaces
         void ViewProduct(Product product);
 
         Product GetProductById(int productId);
+
+        public Product GetProductByIdFromCart(int productId);
+
+        void DeleteProductFromCart(int productId);
     }
 }

@@ -5,9 +5,30 @@
 
 @if (products != null)
 {
+    <div class="col">
+
+        <HxDropdownButtonGroup CssClass="mb-1">
+        <HxDropdownToggleButton Color="ThemeColor.Primary">Filter by manufacturer</HxDropdownToggleButton>
+        <HxDropdownMenu>
+            <HxDropdownItem OnClick="FilterAll">All</HxDropdownItem>
+            <HxDropdownItem OnClick="FilterGiant">Giant</HxDropdownItem>
+            <HxDropdownItem OnClick="FilterRedline">Redline</HxDropdownItem>
+            <HxDropdownItem OnClick="FilterBicyclette">Bicyclette</HxDropdownItem>
+        </HxDropdownMenu>
+        </HxDropdownButtonGroup>
+        <b>Sort</b> by price:
+        <HxButtonGroup>
+            <HxButton Size="ButtonSize.Small" Text="Desc" Color="ThemeColor.Primary" Outline="true" @onclick="@(() => Desc())"/>
+            <HxButton Size="ButtonSize.Small" Text="Asc" Color="ThemeColor.Primary" Outline="true" @onclick="@(() => Asc())"/>
+        </HxButtonGroup>
+
+    </div>
+
     <div class="row">
         @foreach (var product in products)
         {
+            bool addedFlag = AlreadyAdded(product);
+
 	         <div class="col-sm border-0">
                    <HxCard ImageAlt="@product.Img"
 		                        ImageSrc="@product.Img"
@@ -15,10 +36,34 @@
                                 
 	                        <BodyTemplate>
 		                        <HxCardTitle>@product.Title</HxCardTitle>
+                                <HxCardSubtitle CssClass="mb-2 text-muted">Manufacturer: @product.Manufacturer</HxCardSubtitle>
 		                        <HxCardText>Price: $@product.Price</HxCardText>
-		                        <HxButton Color="ThemeColor.Primary" @onclick="@(() => ViewSingleProduct(product))">ViewDetails</HxButton>
-                                <HxButton Color="ThemeColor.Primary" @onclick="@(() => AddToCart(product))">Add to cart</HxButton>
-	                        </BodyTemplate>
+                                
+		                        <HxAccordion>
+	                                <HxAccordionItem>
+		                                <HeaderTemplate>Description</HeaderTemplate>
+		                                <BodyTemplate>
+			                                @product.Description
+                                        </BodyTemplate>
+	                                </HxAccordionItem>
+	                               
+                                </HxAccordion>
+                                
+                                @if(addedFlag == true)
+                                {
+                                    <HxButton Enabled = "false" Color="ThemeColor.Primary">Already in cart</HxButton>
+                                }
+                                else
+                                {
+                                @if (product.Stock > 0)
+                                {
+                                    <HxButton Enabled = "true" Color="ThemeColor.Primary" @onclick="@(() => AddToCart(product))">Add to cart</HxButton>
+                                }else
+                                {
+                                    <HxButton Enabled = "false" Color="ThemeColor.Primary">Out of stock</HxButton>
+                                }
+                                }
+                    </BodyTemplate>
                    </HxCard>
              </div>     
              <br />
@@ -29,12 +74,78 @@
 @code {
     private List<Product> products;
     private List<Product> cart;
+    bool sortFlag = true;
+    string filterFlag = "";
+
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
         products = ViewProductsUseCase.Execute().ToList();
         cart = ViewProductsUseCase.CreateCart().ToList();
+
+
+
+        var sortedProducts = from p in products
+                             orderby p.Price descending
+                             select p;
+        var filteredProducts = from p in products
+                               where p.Manufacturer == "Giant"
+                               select p;
+        var sortedAndFiltered = from p in products
+                                orderby p.Price descending
+                                select p;
+        if(filterFlag == "Giant")
+        {
+            filteredProducts = products.Where(p=> p.Manufacturer == "Giant").ToList();
+        }
+        else if(filterFlag == "Redline")
+        {
+            filteredProducts = products.Where(p=> p.Manufacturer == "Redline").ToList();
+        }
+        else if(filterFlag == "Bicyclette")
+        {
+            filteredProducts = products.Where(p=> p.Manufacturer == "Bicyclette").ToList();
+        }
+
+        if (sortFlag == true)
+        {
+            sortedProducts = from p in products
+                             orderby p.Price descending
+                             select p;
+        }
+        else
+        {
+            sortedProducts = from p in products
+                             orderby p.Price ascending
+                             select p;
+        }
+
+        if (filterFlag == "")
+        {
+            products = sortedProducts.ToList();
+        }
+        else
+        {
+
+            products = filteredProducts.ToList();
+
+            if(sortFlag == true)
+            {
+                sortedAndFiltered = from p in products
+                                    orderby p.Price descending
+                                    select p;
+            }
+            else
+            {
+                sortedAndFiltered = from p in products
+                                    orderby p.Price ascending
+                                    select p;
+            }
+
+            products = sortedAndFiltered.ToList();
+        }
+
     }
 
     private void ViewSingleProduct(Product product)
@@ -45,6 +156,63 @@
     private void AddToCart(Product product)
     {
         ViewProductsUseCase.AddProduct(product);
+        OnInitialized();
+    }
+
+    private bool AlreadyAdded(Product product)
+    {
+        if (cart != null)
+        {
+            var alreadyAdded = cart.FirstOrDefault(x => x.Id == product.Id);
+            if (alreadyAdded == null)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    private void Desc()
+    {
+        sortFlag = true;
+        OnInitialized();
+    }
+
+    private void Asc()
+    {
+        sortFlag = false;
+        OnInitialized();
+    }
+
+    private void FilterGiant()
+    {
+        filterFlag = "Giant";
+        OnInitialized();
+    }
+
+    private void FilterRedline()
+    {
+        filterFlag = "Redline";
+        OnInitialized();
+    }
+
+    private void FilterBicyclette()
+    {
+        filterFlag = "Bicyclette";
+        OnInitialized();
+    }
+
+    private void FilterAll()
+    {
+        filterFlag = "";
+        OnInitialized();
     }
 }
 

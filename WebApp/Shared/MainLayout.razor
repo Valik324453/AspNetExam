@@ -1,5 +1,7 @@
 ﻿@inherits LayoutComponentBase
 
+@inject IViewProductsUseCase ViewProductsUseCase
+
 <div class="page">
     
 
@@ -10,7 +12,7 @@
     <HxNavbarCollapse>
         <HxNav CssClass="me-auto mb-2 mb-lg-0">
             <HxNavLink Href="/info">Info</HxNavLink>
-            <HxNavLink Href="/cart">Cart</HxNavLink>
+            <HxNavLink Href="/cart">Cart </HxNavLink>
         </HxNav>
         
     </HxNavbarCollapse>
@@ -22,3 +24,14 @@
         </div>
     </div>
 </div>
+
+@code {
+    private List<Product> cart;
+
+    protected override void OnInitialized()
+    {
+        
+        cart = ViewProductsUseCase.CreateCart().ToList();
+        base.OnInitialized();
+    }
+}

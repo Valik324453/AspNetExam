@@ -1,27 +1,45 @@
 ﻿@page "/cart"
+@using UseCases
 
 @inject IViewProductsUseCase ViewProductsUseCase
+@inject IDeleteFromCartUseCase DeleteFromCartUseCase
 @inject NavigationManager NavigationManager
 
-
+@if (cart.Count != 0)
+{
 <h3>Cart</h3>
 
-@if (cart != null)
-{
+
        <table class="table">
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Actions</th>
+                <th>Model</th>
+                <th>Manufacturer</th>
+                <th>Price</th>
+                <th>Available</th>
+                <th>Quantity</th>
+                <th>Price sum</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var cartItem in cart)
             {
+                currentCount = 1;
                 <tr>
-                    <td>@cartItem.Id</td>
                     <td>@cartItem.Title</td>
+                    <td>@cartItem.Manufacturer</td>
+                    <td>@cartItem.Price</td>
+                    <td>@cartItem.Stock</td>
+                    <td>@cartItem.Qnt
+                    
+                        <HxButtonGroup>
+                            <HxButton Size="ButtonSize.Small" Text="-" Color="ThemeColor.Secondary" Outline="true" @onclick="@(() => SubQnt(cartItem))"/>
+                            <HxButton Size="ButtonSize.Small" Text="+" Color="ThemeColor.Secondary" Outline="true" @onclick="@(() => AddQnt(cartItem))"/>
+                        </HxButtonGroup>
+                    </td>
+
+                    <td>@(cartItem.Price * cartItem.Qnt)</td>
+
                     <td>
                        
                         <button type="button" class="btn btn-danger" @onclick="@(() => RemoveFromCart(cartItem.Id))">Remove</button>
@@ -30,10 +48,16 @@
             }
         </tbody>
     </table>
+    <p>Total sum: @TotalSum()</p>
+}
+else
+{
+    <h3>Cart is empty</h3>
 }
 
 @code {
     private List<Product> cart;
+    private int currentCount = 1;
 
     protected override void OnInitialized()
     {
@@ -43,9 +67,41 @@
 
     private void RemoveFromCart(int productId)
     {
-        DeleteProductUseCase.Execute(productId);
-        NavigationManager.NavigateTo("/products");
+        DeleteFromCartUseCase.Execute(productId);
+        cart = ViewProductsUseCase.CreateCart().ToList();
     }
+
+    private void SubQnt(Product cartItem)
+    {
+        if (cartItem.Qnt > 1)
+        {
+            cartItem.Qnt -= 1;
+        }
+        else
+        {
+            cartItem.Qnt = 1;
+        }
+
+    }
+
+    private void AddQnt(Product cartItem)
+    {
+        if (cartItem.Qnt < cartItem.Stock)
+        {
+            cartItem.Qnt += 1;
+        }
+    }
+
+    private decimal TotalSum()
+    {
+        decimal sum = 0;
+        foreach (var cartItem in cart)
+        {
+            sum += cartItem.Qnt * cartItem.Price;
+        }
+        return sum;
+    }
+
 
    
 }
