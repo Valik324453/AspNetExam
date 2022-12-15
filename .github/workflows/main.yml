@@ -29,3 +29,11 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         BRANCH: gh-pages
         FOLDER: release/wwwroot
+        
+    # меняем '/' на '/BlazorGitHubPagesDemo/'
+    - name: Change base-tag in index.html from / to AspNetExam-Blazor-
+      run: sed -i 's/<base href="\/" \/>/<base href="\/AspNetExam-Blazor-\/" \/>/g' release/wwwroot/index.html
+      
+    # отключаем jekyll
+    - name: Add .nojekyll file
+      run: touch release/wwwroot/.nojekyll
